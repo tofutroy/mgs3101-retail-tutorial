@@ -2,5 +2,39 @@ import pandas as pd
 pd.set_option('display.max_columns', 12)
 pd.set_option('display.width', 1000)
 pd.set_option('display.float_format', lambda value: f'{value:,.2f}')
+#Step 1: Pandas Import    
 
-print("Pandas version:", pd.__version__)
+def demo_pandas_fundamentals():
+    print("\n" + "=" * 70)
+    print("STEP 2: PANDAS FUNDAMENTALS")
+    print("=" * 70)
+daily_sales = pd.Series([1250.50, 2100.00, 1850.75, 3200.20, 4100.00],
+                            index=['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                            name='Daily_Sales_USD'
+)
+print("\nDaily sales Series:")
+print(daily_sales)
+print(f"Total weekly sales: ${daily_sales.sum():,.2f}")
+
+toy_orders = pd.DataFrame({
+    'OrderID': [1001, 1002, 1003, 1004],
+    'Quantity': [15, 8, 25, 2],
+    'UnitPrice': [12.50, 45.00, 12.50, 350.00],
+    'CustomerType': ['B2C', 'B2B', 'B2C', 'B2B']
+})
+toy_orders['LineTotal'] = toy_orders['Quantity'] * toy_orders['UnitPrice']
+print("\nOrders with vectorized line totals:")
+print(toy_orders)
+
+large_b2b_orders = toy_orders[
+    (toy_orders['CustomerType'] == 'B2B') &
+    (toy_orders['LineTotal'] >= 500)
+]
+print("\nB2B orders worth $500 or more:")
+print(large_b2b_orders)
+
+#GUIDED PRACTICE
+#1. Friday Sales ≈ 4100.00
+#2. OrderID 1004: 1004*2 =700
+#3. If  customer type is 'B2B' and line total is >= 500 = 'large_b2b_orders
+#4. Row 3 
