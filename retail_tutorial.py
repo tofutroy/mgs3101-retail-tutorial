@@ -11,6 +11,7 @@ def pandas_import():
 
 pandas_import()
 print("Pandas imported successfully.")
+#Not needed but for my personal sake
 
 #Step 2: First Function 
 def demo_pandas_fundamentals():
@@ -42,8 +43,6 @@ large_b2b_orders = toy_orders[
 ]
 print("\nB2B orders worth $500 or more:")
 print(large_b2b_orders)
-
-
 
 #GUIDED PRACTICE
 #1. Friday Sales ≈ 4100.00
@@ -80,3 +79,46 @@ df_2009, df_2010 = load_and_inspect_data()
 #3. InvoiceDate is not a datetime value b/c we didn't use any functions that converts the invoicedate to such
 #4. Dropping missing customerID understates total sales as removing it removes any sales that were made by this demographic. The business cares about conversions not ID
 
+load_and_inspect_data()
+
+def clean_and_prepare_data(df_2009, df_2010):
+    print("\n" + "=" * 70)
+    print("STEP 4: CLEAN AND PREPARE DATA")
+    print("=" * 70)
+
+    df_combined = pd.concat([df_2009, df_2010], ignore_index=True)
+    df_combined.columns = df_combined.columns.str.strip().str.replace(' ',
+'_')
+    print(f"Combined raw records: {len(df_combined):,}")
+
+    is_cancellation = (
+        df_combined['Invoice'].astype(str).str.startswith('C') |
+        (df_combined['Quantity'] < 0)
+    )
+    df_cancelled = df_combined[is_cancellation].copy()
+    print(f"Cancellation or return rows: {len(df_cancelled):,}")
+
+    df_clean = df_combined[
+        (~is_cancellation) &
+        (df_combined['Quantity'] > 0) &
+        (df_combined['Price'] > 0)
+    ].copy()
+
+    df_clean['Is_Registered'] = df_clean['Customer_ID'].notna()
+    df_clean['InvoiceDate'] = pd.to_datetime(df_clean['InvoiceDate'],
+ dayfirst=True)
+    df_clean['Revenue'] = df_clean['Quantity'] * df_clean['Price']
+
+    print(f"Valid completed sales: {len(df_clean):,}")
+    print(f"Guest checkout rows retained:{(~df_clean['Is_Registered']).sum():,}")
+    print(f"Net revenue: ${df_clean['Revenue'].sum():,.2f}")
+
+    return df_clean, df_cancelled
+
+clean_and_prepare_data(df_2009, df_2010)
+
+#Validation Question 
+#1. In this use case ~is_cancellations would typically return a 1 however with the NOT (~) operator it would return a 0 allowing for it to filter  sucessful sales (not including cancels or returns)
+#2. Quantity and price must be more than 0 because if it was 0 there would be no sale 
+#3. If negative return rows were mixed into the completed sales data it would return 
+#4. We use .copy after filtering to avoid any changes towards the original dataframe
