@@ -149,11 +149,11 @@ def make_recommendations(df_clean, df_cancelled):
     "or negative transactions do not distort revenue."
     )
 
+#STEP 6 : ADDING THE PROGRAM RUNNER
 def main():
     print("MGS 3101 RETAIL PANDAS TUTORIAL")
     demo_pandas_fundamentals()
     df_2009, df_2010 = load_and_inspect_data()
     df_clean, df_cancelled = clean_and_prepare_data(df_2009, df_2010)
-    make_recommendations(df_clean, df_cancelled) 
-
+    make_recommendations(df_clean, df_cancelled)
 if __name__ == '__main__': main()
